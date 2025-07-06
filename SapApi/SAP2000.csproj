@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FF7E655F-7EC2-4C48-9755-5541B353970D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SAP2000</RootNamespace>
+    <AssemblyName>SAP2000</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>image-removebg-preview.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SAP2000.WinForms.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SAP2000v1">
+      <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\SAP2000 26\SAP2000v1.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="enums\eCustomMatType.cs" />
+    <Compile Include="factories\ConcreteMaterialFactory.cs" />
+    <Compile Include="factories\IMaterialFactory.cs" />
+    <Compile Include="factories\RebarMaterialFactory.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="models\loads\LoadCombination.cs" />
+    <Compile Include="models\placements\BeamPlacementInfo.cs" />
+    <Compile Include="models\placements\ColumnPlacementInfo.cs" />
+    <Compile Include="models\placements\GridSystemData.cs" />
+    <Compile Include="models\sections\BaseFrameSectionProperties.cs" />
+    <Compile Include="models\sections\BeamSectionProperties.cs" />
+    <Compile Include="models\sections\ColumnSectionProperties.cs" />
+    <Compile Include="models\materials\ConcreteMaterialProperties.cs" />
+    <Compile Include="models\sections\FrameSectionProperties.cs" />
+    <Compile Include="models\materials\IMaterialProperties.cs" />
+    <Compile Include="models\sections\ISectionProperties.cs" />
+    <Compile Include="models\materials\RebarMaterialProperties.cs" />
+    <Compile Include="models\sections\SlabSectionProperties.cs" />
+    <Compile Include="models\seismics\SeismicParameters.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SeismicDataForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SeismicDataForm.Designer.cs">
+      <DependentUpon>SeismicDataForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="services\builders\placements\FrameObjectsBuilder.cs" />
+    <Compile Include="services\builders\placements\GridSystemBuilder.cs" />
+    <Compile Include="services\builders\loads\LoadCombinationBuilder.cs" />
+    <Compile Include="services\builders\loads\LoadPatternBuilder.cs" />
+    <Compile Include="services\builders\materials\ConcreteMaterialBuilder.cs" />
+    <Compile Include="services\builders\preparations\MassSourceBuilder.cs" />
+    <Compile Include="services\builders\preparations\ResponseSpectrumBuilder.cs" />
+    <Compile Include="services\builders\preparations\RestraintBuilder.cs" />
+    <Compile Include="services\builders\preparations\StartTheProject.cs" />
+    <Compile Include="services\builders\sections\BeamBuilder.cs" />
+    <Compile Include="services\builders\sections\ColumnBuilder.cs" />
+    <Compile Include="services\builders\sections\FrameSectionBuilder.cs" />
+    <Compile Include="services\builders\sections\SlabBuilder.cs" />
+    <Compile Include="services\builders\sections\TBDY2018CoefficientService.cs" />
+    <Compile Include="services\builders\loads\SeismicLoadBuilder.cs" />
+    <Compile Include="services\builders\loads\WindLoadBuilder.cs" />
+    <Compile Include="services\Sap2000ApiService.cs" />
+    <Compile Include="services\builders\materials\Sap2000MaterialBuilderFactory.cs" />
+    <Compile Include="services\ISap2000ApiService.cs" />
+    <Compile Include="services\builders\materials\ISap2000Builder.cs" />
+    <Compile Include="services\builders\materials\IMaterialBuilder.cs" />
+    <Compile Include="services\builders\materials\RebarMaterialBuilder.cs" />
+    <Compile Include="services\validators\IInputValidator.cs" />
+    <Compile Include="services\validators\NumericTextBoxValidator.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.tr-TR.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="SeismicDataForm.resx">
+      <DependentUpon>SeismicDataForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Init.sdb" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="image-removebg-preview.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

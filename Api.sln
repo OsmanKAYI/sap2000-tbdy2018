@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAP2000", "SapApi\SAP2000.csproj", "{FF7E655F-7EC2-4C48-9755-5541B353970D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF7E655F-7EC2-4C48-9755-5541B353970D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF7E655F-7EC2-4C48-9755-5541B353970D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF7E655F-7EC2-4C48-9755-5541B353970D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF7E655F-7EC2-4C48-9755-5541B353970D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FD376B1B-0DD4-4D00-85BB-8A18FA8E3AC8}
+	EndGlobalSection
+EndGlobal
