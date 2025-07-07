@@ -2,14 +2,16 @@
 using SAP2000.models;
 using SAP2000.services.builders.materials;
 using SAP2000.models.sections;
+using System;
 
 namespace SAP2000.services.builders.sections
 {
     public class ColumnBuilder : ISap2000Builder<ColumnSectionProperties>
     {
+        int ret = 0;
         public void Build(cSapModel sapModel, ColumnSectionProperties props)
         {
-            sapModel.PropFrame.SetRectangle(props.SectionName, props.MaterialName, props.Depth, props.Width, -2);
+            sapModel.PropFrame.SetRectangle(props.SectionName, props.MaterialName, props.Depth, props.Width);
 
             double[] modifierForColumn = new double[] {
                 1,
@@ -24,23 +26,28 @@ namespace SAP2000.services.builders.sections
 
             sapModel.PropFrame.SetModifiers(props.SectionName, ref modifierForColumn);
 
-            sapModel.PropFrame.SetRebarColumn(
+            ret = sapModel.PropFrame.SetRebarColumn(
                 Name: props.SectionName,
                 MatPropLong: props.RebarMaterialName,
                 MatPropConfine: props.RebarMaterialName,
-                Pattern: 1,                
-                ConfineType: 1,                
+                Pattern: 1,
+                ConfineType: 1,
                 Cover: props.ConcreteCover,
                 NumberCBars: 4,
                 NumberR3Bars: 3,
                 NumberR2Bars: 3,
-                RebarSize: "16",                
-                TieSize: "8",                
+                RebarSize: "#9",
+                TieSize: "#4",
                 TieSpacingLongit: 150,
                 Number2DirTieBars: 2,
                 Number3DirTieBars: 2,
                 ToBeDesigned: true
             );
+
+            if (ret != 0)
+            {
+                throw new Exception($"Kolon Oluşturulamadı: SAP2000 API error {ret} while setting rebar for column section {props.SectionName}");
+            }
         }
     }
 }

@@ -1,23 +1,27 @@
-﻿using SAP2000.enums;
+﻿// SapApi/Form1.cs
+using SAP2000.API.models.excel;
+using SAP2000.API.services.excel;
+using SAP2000.enums;
 using SAP2000.factories;
-using SAP2000.models.seismic;
+using SAP2000.models.materials;
 using SAP2000.models.placements;
-using SAP2000.services.validators;
+using SAP2000.models.sections;
+using SAP2000.models.seismic;
 using SAP2000.services;
+using SAP2000.services.validators;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using SAP2000.models.sections;
-using SAP2000.models.materials;
 
 namespace SAP2000
 {
     public partial class Form1 : Form
     {
         private readonly ISap2000ApiService _Sap2000ApiService;
+        private readonly IExcelDataReaderService _excelDataReaderService; // Excel okuyucu servi güncellemesi
         private readonly List<IMaterialProperties> _materialsToExport = new List<IMaterialProperties>();
         private readonly List<ISectionProperties> _sectionsToExport = new List<ISectionProperties>();
         private readonly List<ColumnPlacementInfo> _columnplacements = new List<ColumnPlacementInfo>();
@@ -25,6 +29,10 @@ namespace SAP2000
         private SeismicParameters _seismicParameters;
         private int _nextColumnId = 101;
         private int _nextBeamId = 101;
+
+
+
+
 
         private DataGridView dgvAddedsections;
         private ComboBox cmbMaterials, cmbMaterialType;
@@ -46,13 +54,16 @@ namespace SAP2000
         private ComboBox cmbBeamStartColumn;
         private ComboBox cmbBeamEndColumn;
         private ComboBox cmbBeamSection;
+
         private readonly Dictionary<Control, IInputValidator> _validators = new Dictionary<Control, IInputValidator>();
+        private readonly Dictionary<Control, Label> _errorLabels = new Dictionary<Control, Label>();
 
         public Form1(ISap2000ApiService Sap2000ApiService)
         {
             _Sap2000ApiService = Sap2000ApiService;
-            InitializeComponentUI();
-            InitializeComponent();
+            _excelDataReaderService = new ExcelDataReaderService(); 
+            InitializeComponentUI(); 
+            InitializeComponent(); 
             this.MinimumSize = new Size(1200, 850);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Load += OnFormLoad;
@@ -73,7 +84,8 @@ namespace SAP2000
             {
                 Dock = DockStyle.Fill,
                 ColumnCount = 2,
-                RowCount = 3,                BackColor = SystemColors.ControlLightLight,
+                RowCount = 3,
+                BackColor = SystemColors.ControlLightLight,
                 Padding = new Padding(10),
                 Margin = new Padding(0)
             };
@@ -87,7 +99,7 @@ namespace SAP2000
             var gbStories = BuildStoryDefinitionGroupBox();
             var gbsections = BuildSectionDefinitionGroupBox();
             var gbPlacement = BuildPlacementGroupBox();
-            var bottomPanel = BuildBottomPanel();
+            var bottomPanel = BuildBottomPanel(); 
 
             mainLayoutPanel.Controls.Add(gbMaterials, 0, 0);
 
@@ -100,7 +112,7 @@ namespace SAP2000
             mainLayoutPanel.SetColumnSpan(gbPlacement, 2);
 
             this.Controls.Add(mainLayoutPanel);
-            this.Controls.Add(bottomPanel);
+            this.Controls.Add(bottomPanel); 
 
             this.ResumeLayout(false);
         }
@@ -226,9 +238,17 @@ namespace SAP2000
         private Panel BuildBottomPanel()
         {
             var bottomFlowPanel = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 60, Padding = new Padding(0, 10, 10, 10), BackColor = Color.White };
+
             Button btnExportToSap2000 = CreateButton("Modeli Sap2000'e Aktar", Color.DarkGreen, BtnExportToSap2000_Click, 200, 40);
-            Button btnSeismicInfo = CreateButton("Deprem Bilgilerini Gir", Color.DarkSlateBlue, BtnShowSeismicForm_Click, 200, 40);            bottomFlowPanel.Controls.Add(btnExportToSap2000);
-            bottomFlowPanel.Controls.Add(btnSeismicInfo);            return bottomFlowPanel;
+            Button btnSeismicInfo = CreateButton("Deprem Bilgilerini Gir", Color.DarkSlateBlue, BtnShowSeismicForm_Click, 200, 40);
+
+            Button btnImportExcel = CreateButton("Kolon/Kiriş Kordinatlarını Excel'den Aktar", Color.DarkRed, btnImportExcel_Click, 300, 40); 
+
+            bottomFlowPanel.Controls.Add(btnExportToSap2000);
+            bottomFlowPanel.Controls.Add(btnSeismicInfo);
+            bottomFlowPanel.Controls.Add(btnImportExcel); 
+
+            return bottomFlowPanel;
         }
 
         private void BtnShowSeismicForm_Click(object sender, EventArgs e)
@@ -256,7 +276,7 @@ namespace SAP2000
 
                 _Sap2000ApiService.CreateProjectInNewModel(
                     gridData,
-                    _seismicParameters,                    
+                    _seismicParameters,
                     _materialsToExport,
                     _sectionsToExport,
                     _columnplacements,
@@ -279,6 +299,86 @@ namespace SAP2000
             }
         }
 
+        private void btnImportExcel_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Excel Dosyaları (*.xlsx)|*.xlsx|Tüm Dosyalar (*.*)|*.*";
+                openFileDialog.Title = "Kolon ve Kiriş Verilerini İçeri Aktarmak İçin Excel Dosyası Seçin";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = openFileDialog.FileName;
+                    try
+                    {
+                        List<ExcelColumnData> columnData = _excelDataReaderService.ReadColumnData(filePath);
+                        List<ExcelBeamData> beamData = _excelDataReaderService.ReadBeamData(filePath);
+
+                        foreach (var col in columnData)
+                        {
+                            string columnName = string.IsNullOrWhiteSpace(col.Name) ? $"S{_nextColumnId++}" : col.Name;
+
+                            if (!_columnplacements.Any(p => (p.X == col.X && p.Y == col.Y) || p.ColumnName.Equals(columnName, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                var placement = new ColumnPlacementInfo
+                                {
+                                    ColumnName = columnName,
+                                    X = col.X * 1000, 
+                                    Y = col.Y * 1000, 
+                                    SectionName = col.SectionName
+                                };
+                                _columnplacements.Add(placement);
+                            }
+                            else
+                            {
+                                MessageBox.Show($"Kolon '{columnName}' (X:{col.X}, Y:{col.Y}) zaten mevcut veya aynı isimde bir kolon var. Atlandı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                        }
+
+                        foreach (var beam in beamData)
+                        {
+                            string beamName = string.IsNullOrWhiteSpace(beam.Name) ? $"K{_nextBeamId++}" : beam.Name;
+
+                            bool startColExists = _columnplacements.Any(c => c.ColumnName.Equals(beam.StartColumnName, StringComparison.OrdinalIgnoreCase));
+                            bool endColExists = _columnplacements.Any(c => c.ColumnName.Equals(beam.EndColumnName, StringComparison.OrdinalIgnoreCase));
+
+                            if (!startColExists || !endColExists)
+                            {
+                                MessageBox.Show($"Kiriş '{beamName}' için başlangıç kolonu ('{beam.StartColumnName}') veya bitiş kolonu ('{beam.EndColumnName}') bulunamadı. Kiriş atlandı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                continue;
+                            }
+
+                            if (!_beamplacements.Any(b => b.StartColumnName.Equals(beam.StartColumnName, StringComparison.OrdinalIgnoreCase) &&
+                                                          b.EndColumnName.Equals(beam.EndColumnName, StringComparison.OrdinalIgnoreCase) &&
+                                                          b.SectionName.Equals(beam.SectionName, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                var placement = new BeamPlacementInfo
+                                {
+                                    BeamName = beamName,
+                                    StartColumnName = beam.StartColumnName,
+                                    EndColumnName = beam.EndColumnName,
+                                    SectionName = beam.SectionName
+                                };
+                                _beamplacements.Add(placement);
+                            }
+                            else
+                            {
+                                MessageBox.Show($"Kiriş '{beamName}' (Başlangıç: {beam.StartColumnName}, Bitiş: {beam.EndColumnName}) zaten mevcut. Atlandı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                        }
+
+                        UpdateUIDataSources();
+
+                        MessageBox.Show("Excel verileri başarıyla içeri aktarıldı ve listelere eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Excel dosyasını okurken veya verileri işlerken bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
         private GridSystemData CreateGridDataFromInputs()
         {
             var gridData = new GridSystemData();
@@ -295,9 +395,12 @@ namespace SAP2000
                 .OrderBy(y => y)
                 .ToList();
 
-            double firstStoryHeight = double.Parse(txtFirstStoryHeight.Text, CultureInfo.InvariantCulture) * 1000;            double typicalStoryHeight = double.Parse(txtTypicalStoryHeight.Text, CultureInfo.InvariantCulture) * 1000;            int totalStories = (int)numTotalStories.Value;
+            double firstStoryHeight = double.Parse(txtFirstStoryHeight.Text, CultureInfo.InvariantCulture) * 1000;
+            double typicalStoryHeight = double.Parse(txtTypicalStoryHeight.Text, CultureInfo.InvariantCulture) * 1000;
+            int totalStories = (int)numTotalStories.Value;
 
-            gridData.ZCoordinates.Add(0);            double currentHeight = 0;
+            gridData.ZCoordinates.Add(0);
+            double currentHeight = 0;
             for (int i = 0; i < totalStories; i++)
             {
                 currentHeight += (i == 0) ? firstStoryHeight : typicalStoryHeight;
@@ -332,6 +435,12 @@ namespace SAP2000
             {
                 bool isValid = validator.Validate(control, out string error);
                 validator.ApplyValidationStyle(control, isValid);
+
+                if (_errorLabels.TryGetValue(control, out Label errorLabel))
+                {
+                    errorLabel.Text = error; 
+                }
+
                 control.Tag = isValid ? null : error;
             }
         }
@@ -340,24 +449,70 @@ namespace SAP2000
         {
             var tabPage = new TabPage(type) { BackColor = Color.White, Padding = new Padding(10) };
             var pnl = new TableLayoutPanel { Dock = DockStyle.Top, ColumnCount = 4, AutoSize = true, BackColor = Color.White };
-            txtName = AddRow(pnl, "Kesit Adı");
-            txtName.Text = type == "Kolon" ? $"S30/30" : "K30/50";
-            pnl.SetColumnSpan(txtName, 2);
+
+            pnl.ColumnStyles.Clear();
+            pnl.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));             // 0: Açıklama Etiketi
+            pnl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));         // 1: Kontrol (TextBox/ComboBox)
+            pnl.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));              // 2: Hata Etiketi
+            pnl.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 130F));        // 3: Butonlar
+
+            txtName = AddRow(pnl, "Kesit Adı:");
+            pnl.SetColumnSpan(txtName, 2); 
+            txtName.Text = type == "Kolon" ? $"S30/30" : "K20/30";
+
             cmbConcrete = AddRow(pnl, "Beton Malzemesi:", true);
             pnl.SetColumnSpan(cmbConcrete, 2);
+
             cmbRebar = AddRow(pnl, "Donatı Malzemesi:", true);
             pnl.SetColumnSpan(cmbRebar, 2);
+
+            void CreateAndRegisterErrorLabel(TextBox validatedControl)
+            {
+                var errorLabel = new Label
+                {
+                    Text = "",
+                    ForeColor = Color.DarkRed,
+                    Dock = DockStyle.Fill,
+                    AutoSize = true,
+                    Margin = new Padding(3, 8, 3, 3)
+                };
+                _errorLabels[validatedControl] = errorLabel; 
+                pnl.Controls.Add(errorLabel, 2, pnl.RowCount - 1); 
+            }
+
             txtWidth = AddRow(pnl, "Genişlik (b, mm):");
+            CreateAndRegisterErrorLabel(txtWidth);
             txtWidth.Text = type == "Kolon" ? "300" : "200";
+
             txtHeight = AddRow(pnl, "Yükseklik (h, mm):");
+            CreateAndRegisterErrorLabel(txtHeight);
             txtHeight.Text = type == "Kolon" ? "300" : "300";
+
             specificControls = new Dictionary<string, Control>();
-            if (type == "Kolon") { var txtCover = AddRow(pnl, "Paspayı (mm):"); pnl.SetColumnSpan(txtCover, 2); specificControls.Add("Paspayı (mm):", txtCover); }
-            else if (type == "Kiriş") { var txtCoverTop = AddRow(pnl, "Üst Paspayı (mm):"); var txtCoverBottom = AddRow(pnl, "Alt Paspayı (mm):"); specificControls.Add("Üst Paspayı (mm):", txtCoverTop); specificControls.Add("Alt Paspayı (mm):", txtCoverBottom); }
+            if (type == "Kolon")
+            {
+                var txtCover = AddRow(pnl, "Paspayı (mm):");
+                CreateAndRegisterErrorLabel(txtCover);
+                pnl.SetColumnSpan(txtCover, 1);
+                specificControls.Add("Paspayı (mm):", txtCover);
+            }
+            else if (type == "Kiriş")
+            {
+                var txtCoverTop = AddRow(pnl, "Üst Paspayı (mm):");
+                CreateAndRegisterErrorLabel(txtCoverTop);
+
+                var txtCoverBottom = AddRow(pnl, "Alt Paspayı (mm):");
+                CreateAndRegisterErrorLabel(txtCoverBottom);
+
+                specificControls.Add("Üst Paspayı (mm):", txtCoverTop);
+                specificControls.Add("Alt Paspayı (mm):", txtCoverBottom);
+            }
+
             var btnAdd = CreateButton($"{type} Ekle", Color.FromArgb(40, 167, 69), (s, e) => AddSection(type));
             var btnDelete = CreateButton("Seçili Sil", Color.FromArgb(220, 53, 69), BtnDeleteSection_Click);
             pnl.Controls.Add(btnAdd, 3, 0);
             pnl.Controls.Add(btnDelete, 3, 1);
+
             tabPage.Controls.Add(pnl);
             return tabPage;
         }
@@ -389,18 +544,23 @@ namespace SAP2000
             mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
             dgvColumnPlacement = new DataGridView { Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Left, Height = 148, AllowUserToAddRows = false, AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill, RowHeadersVisible = false, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AutoGenerateColumns = false, BackgroundColor = Color.White };
             dgvColumnPlacement.Columns.Add(new DataGridViewTextBoxColumn { Name = "ColumnName", DataPropertyName = "ColumnName", HeaderText = "Kolon Adı" });
-            dgvColumnPlacement.Columns.Add(new DataGridViewTextBoxColumn { Name = "X", DataPropertyName = "X", HeaderText = "X (m)" });
-            dgvColumnPlacement.Columns.Add(new DataGridViewTextBoxColumn { Name = "Y", DataPropertyName = "Y", HeaderText = "Y (m)" });
+            dgvColumnPlacement.Columns.Add(new DataGridViewTextBoxColumn { Name = "X", DataPropertyName = "X", HeaderText = "X (mm)" });
+            dgvColumnPlacement.Columns.Add(new DataGridViewTextBoxColumn { Name = "Y", DataPropertyName = "Y", HeaderText = "Y (mm)" });
             dgvColumnPlacement.Columns.Add(new DataGridViewTextBoxColumn { Name = "SectionName", DataPropertyName = "SectionName", HeaderText = "Kesit Adı" });
             mainPanel.Controls.Add(dgvColumnPlacement, 0, 0);
             var rightPanel = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
-                RowCount = 5,                ColumnCount = 2,
+                RowCount = 5,
+                ColumnCount = 2,
                 Padding = new Padding(10, 0, 0, 0)
             };
 
-            rightPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));            rightPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));            rightPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));            rightPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));            rightPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            rightPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            rightPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            rightPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            rightPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            rightPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             var btnAdd = CreateButton("Kolon Ekle", Color.FromArgb(40, 167, 69), BtnAddNewColumn_Click, 120);
             var btnDelete = CreateButton("Seçili Sil", Color.FromArgb(220, 53, 69), BtnDeleteSelectedColumn_Click, 120);
             var buttonFlowPanel = new FlowLayoutPanel
@@ -411,19 +571,23 @@ namespace SAP2000
             };
             buttonFlowPanel.Controls.Add(btnAdd);
             buttonFlowPanel.Controls.Add(btnDelete);
-            rightPanel.Controls.Add(buttonFlowPanel, 0, 0);            rightPanel.SetColumnSpan(buttonFlowPanel, 2);
+            rightPanel.Controls.Add(buttonFlowPanel, 0, 0);
+            rightPanel.SetColumnSpan(buttonFlowPanel, 2);
 
             var lblSection = new Label { Text = "Kolon Kesiti:", Anchor = AnchorStyles.Left, AutoSize = true, Margin = new Padding(3, 8, 3, 3) };
             cmbNewColumnplacementsection = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Dock = DockStyle.Fill };
-            rightPanel.Controls.Add(lblSection, 0, 1);            rightPanel.Controls.Add(cmbNewColumnplacementsection, 1, 1);
+            rightPanel.Controls.Add(lblSection, 0, 1);
+            rightPanel.Controls.Add(cmbNewColumnplacementsection, 1, 1);
 
             var lblX = new Label { Text = "X (m):", Anchor = AnchorStyles.Left, AutoSize = true, Margin = new Padding(3, 8, 3, 3) };
             numNewColumnX = new NumericUpDown { DecimalPlaces = 2, Minimum = -1000, Maximum = 1000, Dock = DockStyle.Fill };
-            rightPanel.Controls.Add(lblX, 0, 2);            rightPanel.Controls.Add(numNewColumnX, 1, 2);
+            rightPanel.Controls.Add(lblX, 0, 2);
+            rightPanel.Controls.Add(numNewColumnX, 1, 2);
 
             var lblY = new Label { Text = "Y (m):", Anchor = AnchorStyles.Left, AutoSize = true, Margin = new Padding(3, 8, 3, 3) };
             numNewColumnY = new NumericUpDown { DecimalPlaces = 2, Minimum = -1000, Maximum = 1000, Dock = DockStyle.Fill };
-            rightPanel.Controls.Add(lblY, 0, 3);            rightPanel.Controls.Add(numNewColumnY, 1, 3);
+            rightPanel.Controls.Add(lblY, 0, 3);
+            rightPanel.Controls.Add(numNewColumnY, 1, 3);
             mainPanel.Controls.Add(rightPanel, 1, 0);
             return mainPanel;
         }
@@ -463,19 +627,23 @@ namespace SAP2000
             };
             buttonFlowPanel.Controls.Add(btnAdd);
             buttonFlowPanel.Controls.Add(btnDelete);
-            rightPanel.Controls.Add(buttonFlowPanel, 0, 0);            rightPanel.SetColumnSpan(buttonFlowPanel, 2);
+            rightPanel.Controls.Add(buttonFlowPanel, 0, 0);
+            rightPanel.SetColumnSpan(buttonFlowPanel, 2);
 
             var lblStartCol = new Label { Text = "Başlangıç Kolonu:", Anchor = AnchorStyles.Left, AutoSize = true, Margin = new Padding(3, 8, 3, 3) };
             cmbBeamStartColumn = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Dock = DockStyle.Fill };
-            rightPanel.Controls.Add(lblStartCol, 0, 1);            rightPanel.Controls.Add(cmbBeamStartColumn, 1, 1);
+            rightPanel.Controls.Add(lblStartCol, 0, 1);
+            rightPanel.Controls.Add(cmbBeamStartColumn, 1, 1);
 
             var lblEndCol = new Label { Text = "Bitiş Kolonu:", Anchor = AnchorStyles.Left, AutoSize = true, Margin = new Padding(3, 8, 3, 3) };
             cmbBeamEndColumn = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Dock = DockStyle.Fill };
-            rightPanel.Controls.Add(lblEndCol, 0, 2);            rightPanel.Controls.Add(cmbBeamEndColumn, 1, 2);
+            rightPanel.Controls.Add(lblEndCol, 0, 2);
+            rightPanel.Controls.Add(cmbBeamEndColumn, 1, 2);
 
             var lblSection = new Label { Text = "Kiriş Kesiti:", Anchor = AnchorStyles.Left, AutoSize = true, Margin = new Padding(3, 8, 3, 3) };
             cmbBeamSection = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Dock = DockStyle.Fill };
-            rightPanel.Controls.Add(lblSection, 0, 3);            rightPanel.Controls.Add(cmbBeamSection, 1, 3);
+            rightPanel.Controls.Add(lblSection, 0, 3);
+            rightPanel.Controls.Add(cmbBeamSection, 1, 3);
             mainPanel.Controls.Add(rightPanel, 1, 0);
             return mainPanel;
         }
@@ -530,11 +698,13 @@ namespace SAP2000
         {
             if (cmbNewColumnplacementsection.SelectedItem == null) { MessageBox.Show("Lütfen bir kesit seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             string newColumnName = $"S{_nextColumnId++}";
-            var placement = new ColumnPlacementInfo { 
-                ColumnName = newColumnName, 
-                X = (double)numNewColumnX.Value*1000, 
-                Y = (double)numNewColumnY.Value*1000, 
-                SectionName = cmbNewColumnplacementsection.SelectedItem.ToString() };
+            var placement = new ColumnPlacementInfo
+            {
+                ColumnName = newColumnName,
+                X = (double)numNewColumnX.Value * 1000,
+                Y = (double)numNewColumnY.Value * 1000,
+                SectionName = cmbNewColumnplacementsection.SelectedItem.ToString()
+            };
             _columnplacements.Add(placement);
             UpdateUIDataSources();
         }
@@ -626,8 +796,8 @@ namespace SAP2000
         private T AddRow<T>(TableLayoutPanel pnl, string labelText, out Label label, bool isComboBox = false) where T : Control, new()
         {
             pnl.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            label = new Label { Text = labelText, Anchor = AnchorStyles.Left, AutoSize = true, Margin = new Padding(3, 8, 3, 3), Dock = DockStyle.Fill };
-            var control = new T() { Margin = new Padding(3, 6, 3, 3), Dock = DockStyle.Fill };
+            label = new Label { Text = labelText, Anchor = AnchorStyles.Left, AutoSize = true, Margin = new Padding(3, 8, 3, 3), Width=100 };
+            var control = new T() { Margin = new Padding(3, 6, 3, 3), Width=150};
             if (isComboBox && control is ComboBox cmb) cmb.DropDownStyle = ComboBoxStyle.DropDownList;
             int nextRow = pnl.RowCount++;
             pnl.Controls.Add(label, 0, nextRow); pnl.Controls.Add(control, 1, nextRow);

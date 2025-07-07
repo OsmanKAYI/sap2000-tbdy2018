@@ -15,9 +15,10 @@ namespace SAP2000.services.builders.preparations
         {
             _sapModel = sapModel ?? throw new ArgumentNullException(nameof(sapModel));
         }
-        
+
         public void DefineResponseSpectrumFunctions(SeismicParameters parameters)
         {
+
             int tableVersion = 0;
             string[] fields = null;
             int numRec = 0;
@@ -48,10 +49,12 @@ namespace SAP2000.services.builders.preparations
 
             int fatalError = 0, numErrors = 0, numWarnings = 0, numInfo = 0;
             string msg = "";
-            _sapModel.DatabaseTables.ApplyEditedTables(true, ref fatalError, ref numErrors, ref numWarnings, ref numInfo, ref msg);
-            if (fatalError > 0 || numErrors > 0)
+            // ApplyToAll parametresini 'false' yapmak, sadece bu tablodaki değişikliği uygular.
+            // Bu, daha kontrollü bir yaklaşımdır.
+            ret = _sapModel.DatabaseTables.ApplyEditedTables(false, ref fatalError, ref numErrors, ref numWarnings, ref numInfo, ref msg);
+            if (fatalError > 0 || numErrors > 0 || ret != 0)
             {
-                throw new Exception($"Tepki spektrumu fonksiyonları uygulanırken hata oluştu: {msg}");
+                throw new Exception($"Tepki spektrumu fonksiyonları uygulanırken hata oluştu: {msg}, RET: {ret}");
             }
         }
 

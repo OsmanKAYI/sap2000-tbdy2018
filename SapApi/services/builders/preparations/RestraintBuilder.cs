@@ -1,6 +1,4 @@
-﻿
-using SAP2000.models.placements;
-using SAP2000v1;
+﻿using SAP2000v1;
 using System;
 using System.Collections.Generic;
 
