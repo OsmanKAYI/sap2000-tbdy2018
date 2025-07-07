@@ -5,16 +5,13 @@ C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\bin\Debug\Newtonsoft.Json.
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.csproj.AssemblyReference.cache
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.Form1.resources
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.SeismicDataForm.resources
-C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.Form1.tr-TR.resources
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.csproj.GenerateResource.cache
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.csproj.CoreCompileInputs.cache
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.csproj.Up2Date
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\bin\Debug\SAP2000.exe.config
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\bin\Debug\SAP2000.exe
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\bin\Debug\SAP2000.pdb
-C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\bin\Debug\tr-TR\SAP2000.resources.dll
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.Properties.Resources.resources
-C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\tr-TR\SAP2000.resources.dll
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.exe
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.pdb
 C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\obj\Debug\SAP2000.exe.config

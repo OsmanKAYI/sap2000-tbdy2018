@@ -26,6 +26,7 @@ namespace SAP2000
             this.ClientSize = new System.Drawing.Size(933, 520);
             this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = new Icon(@"C:\Users\keremsari\source\repos\TBDY2018-TS500\SapApi\pic.ico");
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 
             this.Name = "Form1";

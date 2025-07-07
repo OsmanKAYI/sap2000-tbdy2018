@@ -16,6 +16,9 @@ using SAP2000.models.sections;
 
 namespace SAP2000.services
 {
+    //SAP2000 API servisi, SAP2000 modelini oluşturmak ve yapı elemanlarını tanımlamak için kullanılır. 
+    // Çeşitli sınıfların builder'larını kullanarak, malzeme, kesit, yük ve yerleşim bilgilerini SAP2000 modeline aktarır.
+
     public class Sap2000ApiService : ISap2000ApiService
     {
         public void CreateProjectInNewModel(GridSystemData gridData, SeismicParameters seismicParameters, List<IMaterialProperties> materials, List<ISectionProperties> sections, List<ColumnPlacementInfo> columnplacements, List<BeamPlacementInfo> beamplacements, bool makeVisible)
