@@ -9,10 +9,10 @@ namespace SAP2000.services.builders.placements
 {
     public class GridSystemBuilder : ISap2000Builder<GridSystemData>
     {
-        public void Build(cSapModel sapModel, GridSystemData gridData)
+        public void build(cSapModel sapModel, GridSystemData gridData)
         {
-            sapModel.File.NewSolidBlock(0, 0, 0,true,"Defult",0,0,0);
-            
+            sapModel.File.NewSolidBlock(0, 0, 0, true, "Defult", 0, 0, 0);
+
             string tableName = "Grid Lines";
             int tableVersion = 0;
             string[] fields = null;
@@ -30,17 +30,20 @@ namespace SAP2000.services.builders.placements
 
             for (int i = 0; i < gridData.XCoordinates.Count; i++)
             {
-                string gridId = Convert.ToChar('A' + i).ToString();                newTableDataList.AddRange(CreateGridRow(fields, "X", gridId, gridData.XCoordinates[i]));
+                string gridId = Convert.ToChar('A' + i).ToString();
+                newTableDataList.AddRange(createGridRow(fields, "X", gridId, gridData.XCoordinates[i]));
             }
 
             for (int i = 0; i < gridData.YCoordinates.Count; i++)
             {
-                string gridId = (i + 1).ToString();                newTableDataList.AddRange(CreateGridRow(fields, "Y", gridId, gridData.YCoordinates[i]));
+                string gridId = (i + 1).ToString();
+                newTableDataList.AddRange(createGridRow(fields, "Y", gridId, gridData.YCoordinates[i]));
             }
 
             for (int i = 0; i < gridData.ZCoordinates.Count; i++)
             {
-                string gridId = $"Z{i}";                newTableDataList.AddRange(CreateGridRow(fields, "Z", gridId, gridData.ZCoordinates[i]));
+                string gridId = $"Z{i}"; 
+                newTableDataList.AddRange(createGridRow(fields, "Z", gridId, gridData.ZCoordinates[i]));
             }
 
             int newNumRec = newTableDataList.Count / numCols;
@@ -52,7 +55,7 @@ namespace SAP2000.services.builders.placements
                 throw new Exception("SAP2000 grid tablosu güncellenemedi. Hata kodu: " + ret);
             }
 
-            bool applyToAll = false;            int fatalError = 0, numErrors = 0, numWarnings = 0, numInfo = 0;
+            bool applyToAll = false; int fatalError = 0, numErrors = 0, numWarnings = 0, numInfo = 0;
             string msg = "";
             sapModel.DatabaseTables.ApplyEditedTables(applyToAll, ref fatalError, ref numErrors, ref numWarnings, ref numInfo, ref msg);
             if (fatalError > 0 || numErrors > 0)
@@ -63,7 +66,7 @@ namespace SAP2000.services.builders.placements
             sapModel.View.RefreshView();
         }
 
-        private string[] CreateGridRow(string[] fields, string axisDir, string gridId, double coordinate)
+        private string[] createGridRow(string[] fields, string axisDir, string gridId, double coordinate)
         {
             var rowData = new string[fields.Length];
             for (int i = 0; i < rowData.Length; i++)

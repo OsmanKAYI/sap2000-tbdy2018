@@ -13,9 +13,9 @@ namespace SAP2000.WinForms
             Application.SetCompatibleTextRenderingDefault(false);
 
 
-            ISap2000ApiService etabsApiService = new Sap2000ApiService();
+            ISap2000ApiService sapApiService = new Sap2000ApiService();
 
-            Application.Run(new Form1(etabsApiService));
+            Application.Run(new Form1(sapApiService));
         }
     }
 }

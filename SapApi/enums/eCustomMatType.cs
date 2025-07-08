@@ -14,7 +14,7 @@ namespace SAP2000.enums
 
     public static class EnumHelper
     {
-        public static string GetDescription(Enum value)
+        public static string getDescription(Enum value)
         {
             var fi = value.GetType().GetField(value.ToString());
             var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);

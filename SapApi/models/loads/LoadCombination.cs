@@ -11,16 +11,16 @@ namespace SAP2000.models.loads{
 
         public LoadCombination(string name)
         {
-            Name = name;
+            this.Name = name;
             Components = new Dictionary<string, (eCNameType, double)>();
         }
 
-        public LoadCombination AddCase(string loadCaseName, double factor)
+        public LoadCombination addCase(string loadCaseName, double factor)
         {
             Components[loadCaseName] = (eCNameType.LoadCase, factor);
             return this;        }
 
-        public LoadCombination AddCombo(string comboName, double factor)
+        public LoadCombination addCombo(string comboName, double factor)
         {
             Components[comboName] = (eCNameType.LoadCombo, factor);
             return this;

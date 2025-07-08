@@ -15,7 +15,7 @@ namespace SAP2000.services.validators
             _fieldName = fieldName;
         }
 
-        public bool Validate(Control control, out string errorMessage)
+        public bool validate(Control control, out string errorMessage)
         {
             errorMessage = null;
             if (!(control is TextBox textBox))
@@ -35,7 +35,7 @@ namespace SAP2000.services.validators
             return true;
         }
 
-        public void ApplyValidationStyle(Control control, bool isValid)
+        public void applyValidationStyle(Control control, bool isValid)
         {
             if (isValid)
             {

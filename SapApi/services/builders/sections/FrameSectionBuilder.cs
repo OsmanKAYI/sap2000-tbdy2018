@@ -7,7 +7,7 @@ namespace SAP2000.services.builders.sections
 {
     public class FrameSectionBuilder : ISap2000Builder<FrameSectionProperties>
     {
-        public void Build(cSapModel sapModel, FrameSectionProperties properties)
+        public void build(cSapModel sapModel, FrameSectionProperties properties)
         {
             sapModel.PropFrame.SetRectangle(properties.SectionName, properties.MaterialName, properties.Depth, properties.Width);
         }

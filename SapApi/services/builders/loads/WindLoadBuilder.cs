@@ -15,7 +15,7 @@ namespace SAP2000.services.builders.loads
             this._sapModel = sapModel;
         }
 
-        public void DefineWindLoads(GridSystemData gridData)
+        public void defineWindLoads(GridSystemData gridData)
         {
             if (gridData?.ZCoordinates == null || gridData.ZCoordinates.Count < 2)
             {
@@ -24,7 +24,7 @@ namespace SAP2000.services.builders.loads
 
             double minZ = gridData.ZCoordinates.First();
             double maxZ = gridData.ZCoordinates.Last();
-            double buildingHeightMeters = (maxZ - minZ) / 1000.0;            double windSpeed = GetWindSpeedForHeight(buildingHeightMeters);
+            double buildingHeightMeters = (maxZ - minZ) / 1000.0; double windSpeed = GetWindSpeedForHeight(buildingHeightMeters);
 
             string tableName = "Auto Wind - TS 498-97";
             int tableVersion = 0;
@@ -71,7 +71,7 @@ namespace SAP2000.services.builders.loads
             {
                 throw new Exception($"SAP2000 '{tableName}' tablosu güncellenemedi.");
             }
-            
+
             string msg = "";
             _sapModel.DatabaseTables.ApplyEditedTables(false, ref ret, ref ret, ref ret, ref ret, ref msg);
         }
@@ -81,6 +81,7 @@ namespace SAP2000.services.builders.loads
             if (heightInMeters <= 8) return 28;
             if (heightInMeters <= 20) return 36;
             if (heightInMeters <= 100) return 42;
-            return 46;        }
+            return 46;
+        }
     }
 }

@@ -11,9 +11,11 @@ namespace SAP2000.services.builders.loads
         public LoadPatternBuilder(cSapModel sapModel)
         {
             this._sapModel = sapModel;
-            _sapModel.LoadPatterns.ChangeName("DEAD","Ölü");            _sapModel.LoadCases.ChangeName("DEAD","Ölü");        }
+            _sapModel.LoadPatterns.ChangeName("DEAD", "Ölü");
+            _sapModel.LoadCases.ChangeName("DEAD", "Ölü");
+        }
 
-        public void DefineLoadPatterns()
+        public void defineLoadPatterns()
         {
             string tableName = "Load Pattern Definitions";
             int tableVersion = 0;
@@ -29,7 +31,11 @@ namespace SAP2000.services.builders.loads
 
             var loadPatternsToAdd = new List<Tuple<string, string, int, string>>
             {
+                Tuple.Create("Duvar", "Super Dead", 0, ""),
+                Tuple.Create("Kaplama", "Super Dead", 0, ""),
+                Tuple.Create("Sapsiva", "Super Dead", 0, ""),
                 Tuple.Create("Hareketli", "Live", 0, ""),
+                Tuple.Create("Cati Hareketli", "Roof Live", 0, ""),
                 Tuple.Create("Ex", "Quake", 0, "TSC-2018"),
                 Tuple.Create("Ex-Bod", "Quake", 0, "TSC-2018"),
                 Tuple.Create("Ey", "Quake", 0, "TSC-2018"),
@@ -77,19 +83,20 @@ namespace SAP2000.services.builders.loads
                 throw new Exception($"Yük desenleri uygulanırken hata oluştu: {msg}");
             }
 
-            CreateAnalysisCases(loadPatternsToAdd);
-            
+            createAnalysisCases(loadPatternsToAdd);
+
         }
 
-        private void CreateAnalysisCases(List<Tuple<string, string, int, string>> loadPatterns)
+        private void createAnalysisCases(List<Tuple<string, string, int, string>> loadPatterns)
         {
-            for (int i = 0; i < loadPatterns.Count; i++)            {
+            for (int i = 0; i < loadPatterns.Count; i++)
+            {
                 var lp = loadPatterns[i];
                 string loadPatternName = lp.Item1;
 
                 _sapModel.LoadCases.StaticLinear.SetCase(loadPatternName);
 
-                var loadTypes = new string[] { "Load" };                var loadNames = new string[] { loadPatternName };                var scaleFactors = new double[] { 1.0 };
+                var loadTypes = new string[] { "Load" }; var loadNames = new string[] { loadPatternName }; var scaleFactors = new double[] { 1.0 };
                 _sapModel.LoadCases.StaticLinear.SetLoads(
                     loadPatternName,
                     1,

@@ -4,7 +4,7 @@ namespace SAP2000.services.validators
 {
     public interface IInputValidator
     {
-        bool Validate(Control control, out string errorMessage);
-        void ApplyValidationStyle(Control control, bool isValid);
+        bool validate(Control control, out string errorMessage);
+        void applyValidationStyle(Control control, bool isValid);
     }
 }

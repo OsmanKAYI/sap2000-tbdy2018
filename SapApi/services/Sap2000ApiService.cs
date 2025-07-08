@@ -1,6 +1,4 @@
-﻿using EtabsApi.services.builders;
-using EtabsApi.services.builders.preparations;
-using SAP2000.models.seismic;
+﻿using SAP2000.models.seismic;
 using SAP2000.models.placements;
 using SAP2000.services.builders.preparations;
 using SAP2000v1;
@@ -21,7 +19,7 @@ namespace SAP2000.services
 
     public class Sap2000ApiService : ISap2000ApiService
     {
-        public void CreateProjectInNewModel(GridSystemData gridData, SeismicParameters seismicParameters, List<IMaterialProperties> materials, List<ISectionProperties> sections, List<ColumnPlacementInfo> columnplacements, List<BeamPlacementInfo> beamplacements, bool makeVisible)
+        public void createProjectInNewModel(GridSystemData gridData, SeismicParameters seismicParameters, List<IMaterialProperties> materials, List<ISectionProperties> sections, List<ColumnPlacementInfo> columnplacements, List<BeamPlacementInfo> beamplacements, bool makeVisible)
         {
             cOAPI sapObject = null;
             cSapModel sapModel = null;
@@ -33,18 +31,18 @@ namespace SAP2000.services
                 sapObject.ApplicationStart(eUnits.N_mm_C);
                 sapModel = sapObject.SapModel;
 
-                new StartTheProject(sapModel).CreateNewModel();
+                new StartTheProject(sapModel).createNewModel();
                 
-                if (gridData != null) new GridSystemBuilder().Build(sapModel, gridData);
-                new LoadPatternBuilder(sapModel).DefineLoadPatterns();
-                if (seismicParameters != null) new SeismicLoadBuilder(sapModel).DefineSeismicLoads(seismicParameters);
-                if (gridData != null) new WindLoadBuilder(sapModel).DefineWindLoads(gridData);
+                if (gridData != null) new GridSystemBuilder().build(sapModel, gridData);
+                new LoadPatternBuilder(sapModel).defineLoadPatterns();
+                if (seismicParameters != null) new SeismicLoadBuilder(sapModel).defineSeismicLoads(seismicParameters);
+                if (gridData != null) new WindLoadBuilder(sapModel).defineWindLoads(gridData);
 
                 if (materials != null && materials.Any())
                 {
                     foreach (var material in materials)
                     {
-                        Sap2000MaterialBuilderFactory.GetBuilder(material.MaterialType).Build(sapModel, material);
+                        Sap2000MaterialBuilderFactory.getBuilder(material.MaterialType).build(sapModel, material);
                     }
                 }
 
@@ -52,16 +50,16 @@ namespace SAP2000.services
                 {
                     foreach (var section in sections)
                     {
-                        if (section is ColumnSectionProperties col) new ColumnBuilder().Build(sapModel, col);
-                        else if (section is BeamSectionProperties beam) new BeamBuilder().Build(sapModel, beam);
-                        else if (section is SlabSectionProperties slab) new SlabBuilder().Build(sapModel, slab);
+                        if (section is ColumnSectionProperties col) new ColumnBuilder().build(sapModel, col);
+                        else if (section is BeamSectionProperties beam) new BeamBuilder().build(sapModel, beam);
+                        else if (section is SlabSectionProperties slab) new SlabBuilder().build(sapModel, slab);
                     }
                 }
-                if (seismicParameters != null) new ResponseSpectrumBuilder(sapModel).DefineResponseSpectrumFunctions(seismicParameters);
-                new FrameObjectsBuilder(sapModel, columnplacements, beamplacements, gridData).BuildAll();
+                if (seismicParameters != null) new ResponseSpectrumBuilder(sapModel).defineResponseSpectrumFunctions(seismicParameters);
+                new FrameObjectsBuilder(sapModel, columnplacements, beamplacements, gridData).buildAll();
                 new RestraintBuilder(sapModel).supportJoints();
-                new LoadCombinationBuilder(sapModel).DefineAllCombinations();
-                new MassSourceBuilder(sapModel).DefineMassSources();
+                new LoadCombinationBuilder(sapModel).defineAllCombinations();
+                new MassSourceBuilder(sapModel).defineMassSources();
                 sapModel.View.RefreshView(0,false);
             }
             catch (Exception ex)

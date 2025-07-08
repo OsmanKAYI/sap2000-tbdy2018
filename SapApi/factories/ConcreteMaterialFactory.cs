@@ -6,7 +6,7 @@ namespace SAP2000.factories
 {
     public class ConcreteMaterialFactory : IMaterialFactory
     {
-        public IMaterialProperties CreateMaterial(Dictionary<string, object> parameters)
+        public IMaterialProperties createMaterial(Dictionary<string, object> parameters)
         {
             return new ConcreteMaterialProperties
             {

@@ -6,7 +6,7 @@ namespace SAP2000.services.builders.sections
 {
     public class SlabBuilder : ISap2000Builder<SlabSectionProperties>
     {
-        public void Build(cSapModel sapModel, SlabSectionProperties props)
+        public void build(cSapModel sapModel, SlabSectionProperties props)
         {
             double[] modifierForSlap = new double[] {
                 0.25,

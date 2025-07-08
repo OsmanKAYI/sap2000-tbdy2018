@@ -1,7 +1,7 @@
 ﻿
 using SAP2000v1;
 
-namespace EtabsApi.services.builders.preparations
+namespace SAP2000.services.builders.preparations
 {
     class MassSourceBuilder
     {
@@ -11,7 +11,7 @@ namespace EtabsApi.services.builders.preparations
             _sapModel = sapModel;
         }
 
-        public void DefineMassSources()
+        public void defineMassSources()
         {
             _sapModel.SourceMass.ChangeName("MSSSRC1", "MassSource");
             string[] massSourceLoads = { "Ölü", "Hareketli" };

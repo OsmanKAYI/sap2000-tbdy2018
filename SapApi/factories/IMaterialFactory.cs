@@ -6,6 +6,6 @@ namespace SAP2000.factories
 {
     public interface IMaterialFactory
     {
-        IMaterialProperties CreateMaterial(Dictionary<string, object> parameters);
+        IMaterialProperties createMaterial(Dictionary<string, object> parameters);
     }
 }

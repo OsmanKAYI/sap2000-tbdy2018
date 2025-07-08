@@ -14,7 +14,7 @@ namespace SAP2000.services.builders.preparations
         }
 
 
-        public void CreateNewModel()
+        public void createNewModel()
         {
             var assembly = Assembly.GetExecutingAssembly();
             string resourceName = "SAP2000.Init.sdb";
@@ -31,8 +31,10 @@ namespace SAP2000.services.builders.preparations
                     stream.CopyTo(fileStream);
                 }
             }
-
             _sapModel.File.OpenFile(tempFilePath);
+            _sapModel.DesignConcrete.SetCode("TS 500-2000");
+            _sapModel.DesignConcrete.TS_500_2000.SetPreference(2, 9);
+            
         }
     }
 }

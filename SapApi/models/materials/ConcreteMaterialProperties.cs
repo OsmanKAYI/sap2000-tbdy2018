@@ -12,5 +12,6 @@ namespace SAP2000.models.materials
         public double ModulusOfElasticity => 3250 * Math.Sqrt(Fck) + 14000;
         public double PoissonRatio => 0.2;
         public double ThermalCoeff => 0.00001;
-        public double UnitWeight => 0.000025;    }
+        public double UnitWeight => 0.000025;
+    }
 }

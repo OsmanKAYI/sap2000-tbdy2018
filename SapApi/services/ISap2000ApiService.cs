@@ -9,7 +9,7 @@ namespace SAP2000.services
     // SAP2000 API ile iletişim kurduğumuz servisi arayüzü
     public interface ISap2000ApiService
     {
-        void CreateProjectInNewModel(
+        void createProjectInNewModel(
             GridSystemData gridData,
             SeismicParameters seismicParameters,            
             List<IMaterialProperties> materials,

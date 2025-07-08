@@ -274,7 +274,7 @@ namespace SAP2000
 
                 var gridData = CreateGridDataFromInputs();
 
-                _Sap2000ApiService.CreateProjectInNewModel(
+                _Sap2000ApiService.createProjectInNewModel(
                     gridData,
                     _seismicParameters,
                     _materialsToExport,
@@ -311,8 +311,8 @@ namespace SAP2000
                     string filePath = openFileDialog.FileName;
                     try
                     {
-                        List<ExcelColumnData> columnData = _excelDataReaderService.ReadColumnData(filePath);
-                        List<ExcelBeamData> beamData = _excelDataReaderService.ReadBeamData(filePath);
+                        List<ExcelColumnData> columnData = _excelDataReaderService.readColumnData(filePath);
+                        List<ExcelBeamData> beamData = _excelDataReaderService.readBeamData(filePath);
 
                         foreach (var col in columnData)
                         {
@@ -433,8 +433,8 @@ namespace SAP2000
         {
             if (sender is Control control && _validators.TryGetValue(control, out var validator))
             {
-                bool isValid = validator.Validate(control, out string error);
-                validator.ApplyValidationStyle(control, isValid);
+                bool isValid = validator.validate(control, out string error);
+                validator.applyValidationStyle(control, isValid);
 
                 if (_errorLabels.TryGetValue(control, out Label errorLabel))
                 {
@@ -658,7 +658,7 @@ namespace SAP2000
                 IMaterialFactory factory = (matType == eCustomMatType.Rebar) ? (IMaterialFactory)new RebarMaterialFactory() : new ConcreteMaterialFactory();
                 if (matType == eCustomMatType.Rebar) { parameters["Fy"] = Convert.ToDouble(txtFy.Text, CultureInfo.InvariantCulture); parameters["Fu"] = Convert.ToDouble(txtFu.Text, CultureInfo.InvariantCulture); }
                 else { parameters["Fck"] = Convert.ToDouble(txtFck.Text, CultureInfo.InvariantCulture); }
-                var material = factory.CreateMaterial(parameters);
+                var material = factory.createMaterial(parameters);
                 if (string.IsNullOrWhiteSpace(material.MaterialName) || _materialsToExport.Any(m => m.MaterialName.Equals(material.MaterialName, StringComparison.OrdinalIgnoreCase))) throw new Exception("Malzeme adı boş olamaz veya bu isimde malzeme zaten var.");
                 _materialsToExport.Add(material);
                 UpdateUIDataSources();
@@ -744,7 +744,7 @@ namespace SAP2000
             UpdateCombo(cmbColConcrete, concreteMaterials); UpdateCombo(cmbBeamConcrete, concreteMaterials); UpdateCombo(cmbSlabMaterial, concreteMaterials);
             UpdateCombo(cmbColRebar, rebarMaterials); UpdateCombo(cmbBeamRebar, rebarMaterials);
             cmbMaterials.Items.Clear();
-            var materialDescriptions = _materialsToExport.Select(m => $"{EnumHelper.GetDescription(m.MaterialType)} - {m.MaterialName}").ToArray();
+            var materialDescriptions = _materialsToExport.Select(m => $"{EnumHelper.getDescription(m.MaterialType)} - {m.MaterialName}").ToArray();
             if (materialDescriptions.Any()) { cmbMaterials.Items.AddRange(materialDescriptions); cmbMaterials.SelectedIndex = 0; }
         }
 
@@ -781,7 +781,7 @@ namespace SAP2000
         private void LoadMaterialTypes()
         {
             cmbMaterialType.Items.Clear(); matTypeDisplayMap.Clear();
-            foreach (eCustomMatType type in Enum.GetValues(typeof(eCustomMatType))) { string desc = EnumHelper.GetDescription(type); cmbMaterialType.Items.Add(desc); matTypeDisplayMap[desc] = type; }
+            foreach (eCustomMatType type in Enum.GetValues(typeof(eCustomMatType))) { string desc = EnumHelper.getDescription(type); cmbMaterialType.Items.Add(desc); matTypeDisplayMap[desc] = type; }
             if (cmbMaterialType.Items.Count > 0) cmbMaterialType.SelectedIndex = 0;
         }
 

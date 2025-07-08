@@ -14,7 +14,7 @@ namespace SAP2000.API.services.excel
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
-        public List<ExcelColumnData> ReadColumnData(string filePath)
+        public List<ExcelColumnData> readColumnData(string filePath)
         {
             List<ExcelColumnData> columns = new List<ExcelColumnData>();
 
@@ -97,7 +97,7 @@ namespace SAP2000.API.services.excel
             return columns;
         }
 
-        public List<ExcelBeamData> ReadBeamData(string filePath)
+        public List<ExcelBeamData> readBeamData(string filePath)
         {
             List<ExcelBeamData> beams = new List<ExcelBeamData>();
 

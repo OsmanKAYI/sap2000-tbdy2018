@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace EtabsApi.services.builders
+namespace SAP2000.services.builders.preparations
 {
     class RestraintBuilder
     {

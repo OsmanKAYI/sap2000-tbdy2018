@@ -9,7 +9,7 @@ namespace SAP2000.services.builders.sections
     public class ColumnBuilder : ISap2000Builder<ColumnSectionProperties>
     {
         int ret = 0;
-        public void Build(cSapModel sapModel, ColumnSectionProperties props)
+        public void build(cSapModel sapModel, ColumnSectionProperties props)
         {
             sapModel.PropFrame.SetRectangle(props.SectionName, props.MaterialName, props.Depth, props.Width);
 

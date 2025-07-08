@@ -16,7 +16,7 @@ namespace SAP2000.services.builders.preparations
             _sapModel = sapModel ?? throw new ArgumentNullException(nameof(sapModel));
         }
 
-        public void DefineResponseSpectrumFunctions(SeismicParameters parameters)
+        public void defineResponseSpectrumFunctions(SeismicParameters parameters)
         {
 
             int tableVersion = 0;
@@ -32,10 +32,10 @@ namespace SAP2000.services.builders.preparations
 
             var newTableDataList = new List<string>();
 
-            string[] horizontalRow = CreateSpectrumRow(fields, parameters, "TBDY2018 Yatay", "Horizontal");
+            string[] horizontalRow = createSpectrumRow(fields, parameters, "TBDY2018 Yatay", "Horizontal");
             newTableDataList.AddRange(horizontalRow);
 
-            string[] verticalRow = CreateSpectrumRow(fields, parameters, "TBDY2018 Düşey", "Vertical");
+            string[] verticalRow = createSpectrumRow(fields, parameters, "TBDY2018 Düşey", "Vertical");
             newTableDataList.AddRange(verticalRow);
 
             int newNumRec = 2;
@@ -58,7 +58,7 @@ namespace SAP2000.services.builders.preparations
             }
         }
 
-        private string[] CreateSpectrumRow(string[] fields, SeismicParameters parameters, string functionName, string specDir)
+        private string[] createSpectrumRow(string[] fields, SeismicParameters parameters, string functionName, string specDir)
         {
             var rowData = new string[fields.Length];
 

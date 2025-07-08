@@ -5,7 +5,7 @@ namespace SAP2000.services.builders.materials
 {
     public static class Sap2000MaterialBuilderFactory
     {
-        public static IMaterialBuilder GetBuilder(eMatType type)
+        public static IMaterialBuilder getBuilder(eMatType type)
         {
             switch (type)
             {

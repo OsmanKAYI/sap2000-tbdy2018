@@ -19,9 +19,9 @@ namespace SAP2000.services.builders.preparations
             _coefficientService = new TBDY2018CoefficientService();
         }
 
-        public void DefineSeismicLoads(SeismicParameters parameters)
+        public void defineSeismicLoads(SeismicParameters parameters)
         {
-            var (fs, f1) = _coefficientService.CalculateCoefficients(parameters.Ss, parameters.S1, parameters.SiteClass);
+            var (fs, f1) = _coefficientService.calculateCoefficients(parameters.Ss, parameters.S1, parameters.SiteClass);
 
             int tableVersion = 0;
             string[] fields = null;

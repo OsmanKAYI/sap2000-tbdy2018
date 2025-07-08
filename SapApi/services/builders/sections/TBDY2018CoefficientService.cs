@@ -37,18 +37,18 @@ namespace SAP2000.services.builders.sections
             _f1Table = tables["F1_Table"].ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToDictionary(subKvp => double.Parse(subKvp.Key), subKvp => subKvp.Value));
         }
 
-        public (double Fs, double F1) CalculateCoefficients(double ss, double s1, string siteClass)
+        public (double Fs, double F1) calculateCoefficients(double ss, double s1, string siteClass)
         {
             if (siteClass == "ZF")
             {
                 throw new NotSupportedException("ZF zemin sınıfı için sahaya özel analiz gereklidir.");
             }
-            double fs = Interpolate(_fsTable[siteClass], ss);
-            double f1 = Interpolate(_f1Table[siteClass], s1);
+            double fs = interpolate(_fsTable[siteClass], ss);
+            double f1 = interpolate(_f1Table[siteClass], s1);
             return (fs, f1);
         }
 
-        private double Interpolate(Dictionary<double, double> table, double value)
+        private double interpolate(Dictionary<double, double> table, double value)
         {
             var sortedKeys = table.Keys.OrderBy(k => k).ToList();
             if (value <= sortedKeys.First()) return table[sortedKeys.First()];

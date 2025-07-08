@@ -7,7 +7,7 @@ namespace SAP2000.services.builders.sections
 {
     public class BeamBuilder : ISap2000Builder<BeamSectionProperties>
     {
-        public void Build(cSapModel sapModel, BeamSectionProperties props)
+        public void build(cSapModel sapModel, BeamSectionProperties props)
         {
             sapModel.PropFrame.SetRectangle(props.SectionName, props.MaterialName, props.Depth, props.Width,3);
 

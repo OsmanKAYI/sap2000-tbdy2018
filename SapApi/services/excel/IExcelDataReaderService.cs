@@ -5,7 +5,7 @@ namespace SAP2000.API.services.excel
 {
     public interface IExcelDataReaderService
     {
-        List<ExcelColumnData> ReadColumnData(string filePath);
-        List<ExcelBeamData> ReadBeamData(string filePath);
+        List<ExcelColumnData> readColumnData(string filePath);
+        List<ExcelBeamData> readBeamData(string filePath);
     }
 }

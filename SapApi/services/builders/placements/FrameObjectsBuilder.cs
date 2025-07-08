@@ -20,13 +20,13 @@ namespace SAP2000.services.builders.placements
             _storyZCoordinates = gridData.ZCoordinates;
         }
 
-        public void BuildAll()
+        public void buildAll()
         {
-            BuildColumns();
-            BuildBeams();
+            buildColumns();
+            buildBeams();
         }
 
-        private void BuildColumns()
+        private void buildColumns()
         {
             if (_columnplacements == null || !_columnplacements.Any()) return;
 
@@ -37,16 +37,16 @@ namespace SAP2000.services.builders.placements
 
                 foreach (var colPlacement in _columnplacements)
                 {
-                    string frameName = "";                    _sapModel.FrameObj.AddByCoord(
-                        colPlacement.X, colPlacement.Y, z1,                        colPlacement.X, colPlacement.Y, z2,                        ref frameName,
+                    string frameName = ""; _sapModel.FrameObj.AddByCoord(
+                        colPlacement.X, colPlacement.Y, z1, colPlacement.X, colPlacement.Y, z2, ref frameName,
                         colPlacement.SectionName,
-                        colPlacement.ColumnName + $"_Z{i + 1}",                        "Global"
+                        colPlacement.ColumnName + $"_Z{i + 1}", "Global"
                     );
                 }
             }
         }
 
-        private void BuildBeams()
+        private void buildBeams()
         {
             if (_beamplacements == null || !_beamplacements.Any()) return;
 
@@ -61,9 +61,9 @@ namespace SAP2000.services.builders.placements
                     {
                         string frameName = "";
                         _sapModel.FrameObj.AddByCoord(
-                            startCol.X, startCol.Y, z,                            endCol.X, endCol.Y, z,                            ref frameName,
+                            startCol.X, startCol.Y, z, endCol.X, endCol.Y, z, ref frameName,
                             beamPlacement.SectionName,
-                            beamPlacement.BeamName + $"_Z{z}",                            "Global"
+                            beamPlacement.BeamName + $"_Z{z}", "Global"
                         );
 
                         if (!string.IsNullOrEmpty(frameName))
