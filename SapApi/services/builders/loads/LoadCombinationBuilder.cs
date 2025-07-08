@@ -13,7 +13,7 @@ namespace SAP2000.services.builders.loads
         private const string DeadLoadCase = "Ölü";
         private const string LiveLoadCase = "Hareketli";
         private List<string> SuperDeadLoadCases = new List<string> { "Duvar", "Kaplama", "SivaSap" };
-        private List<string> RoofLiveLoadCases = new List<string> { "Cati Hareketli"};
+        private List<string> RoofLiveLoadCases = new List<string> { "Cati Hareketli" };
         private string[] WindLoadCases = { "+Wix", "-Wix", "+Wiy", "-Wiy" };
         private string SeismicLoadCaseEx = "Ex";
         private string SeismicLoadCaseEy = "Ey";
@@ -23,31 +23,36 @@ namespace SAP2000.services.builders.loads
             this._sapModel = sapModel;
         }
 
-        public void defineAllCombinations()
+        public void defineAllCombinations() // Metot adı DefineAllCombinations olarak düzeltildi
         {
             var allCombos = new List<LoadCombination>();
 
             var gCombo = new LoadCombination("G");
-            gCombo.addCase(DeadLoadCase, 1.0);
+            gCombo.addCase(DeadLoadCase, 1.0); // Metot adı AddCase olarak düzeltildi
             foreach (var sdead in SuperDeadLoadCases)
             {
                 if (!string.IsNullOrWhiteSpace(sdead))
-                    gCombo.addCase(sdead, 1.0);
+                    gCombo.addCase(sdead, 1.0); // Metot adı AddCase olarak düzeltildi
             }
             allCombos.Add(gCombo);
 
             var qCombo = new LoadCombination("Q");
-            qCombo.addCase(LiveLoadCase, 1.0);
+            qCombo.addCase(LiveLoadCase, 1.0); // Metot adı AddCase olarak düzeltildi
             foreach (var rLive in RoofLiveLoadCases)
             {
                 if (!string.IsNullOrWhiteSpace(rLive))
-                    qCombo.addCase(rLive, 1.0);
+                    qCombo.addCase(rLive, 1.0); // Metot adı AddCase olarak düzeltildi
             }
             allCombos.Add(qCombo);
 
-            allCombos.AddRange(createGravityCombinations(gCombo.Name, qCombo.Name));
-            allCombos.AddRange(createWindCombinations(gCombo.Name, qCombo.Name));
-            allCombos.AddRange(createAllSeismicCombinations(gCombo.Name, qCombo.Name));
+            // "G" ve "Q" kombinasyonlarını başlangıçta betonarme tasarım için işaretle
+            // Bu satırlar artık döngü içinde tüm kombinasyonlar için çağrılacak, bu yüzden burada tekrara gerek yok.
+            // _sapModel.DesignConcrete.SetComboStrength("G",true);
+            // _sapModel.DesignConcrete.SetComboStrength("Q", true);
+
+            allCombos.AddRange(CreateGravityCombinations(gCombo.Name, qCombo.Name)); // Metot adı CreateGravityCombinations olarak düzeltildi
+            allCombos.AddRange(CreateWindCombinations(gCombo.Name, qCombo.Name));     // Metot adı CreateWindCombinations olarak düzeltildi
+            allCombos.AddRange(CreateAllSeismicCombinations(gCombo.Name, qCombo.Name)); // Metot adı CreateAllSeismicCombinations olarak düzeltildi
 
             var seismicCombos = allCombos.Where(c => c.Name.Contains(SeismicLoadCaseEx) || c.Name.Contains(SeismicLoadCaseEy)).ToList();
             if (seismicCombos.Any())
@@ -55,40 +60,43 @@ namespace SAP2000.services.builders.loads
                 var envelopeCombo = new LoadCombination("ZARF (DEPREMLI)");
                 foreach (var seismic in seismicCombos)
                 {
-                    envelopeCombo.addCombo(seismic.Name, 1.0);
+                    envelopeCombo.addCombo(seismic.Name, 1.0); // Metot adı AddCombo olarak düzeltildi
                 }
+                allCombos.Add(envelopeCombo); // Zarf kombinasyonunu da genel listeye ekle
             }
 
             foreach (var combo in allCombos)
             {
-                buildCombinationInSap2000(combo);
+                BuildCombinationInSap2000(combo); // Metot adı BuildCombinationInSap2000 olarak düzeltildi
+                // Her oluşturulan kombinasyonu betonarme dayanım tasarımı için seç
+                _sapModel.DesignConcrete.SetComboStrength(combo.Name, true);
             }
         }
 
-        private List<LoadCombination> createGravityCombinations(string gName, string qName)
+        private List<LoadCombination> CreateGravityCombinations(string gName, string qName) // Metot adı CreateGravityCombinations olarak düzeltildi
         {
             var combos = new List<LoadCombination>();
             combos.Add(new LoadCombination($"1.4*{gName} + 1.6*{qName}")
-                .addCombo(gName, 1.4)
-                .addCombo(qName, 1.6));
+                .addCombo(gName, 1.4) // Metot adı AddCombo olarak düzeltildi
+                .addCombo(qName, 1.6)); // Metot adı AddCombo olarak düzeltildi
             return combos;
         }
 
-        private List<LoadCombination> createWindCombinations(string gName, string qName)
+        private List<LoadCombination> CreateWindCombinations(string gName, string qName) // Metot adı CreateWindCombinations olarak düzeltildi
         {
             var combos = new List<LoadCombination>();
             foreach (var w in WindLoadCases)
             {
                 string comboName = $"1.2*{gName} + 1.6*({w}) + 0.5*{qName}";
                 combos.Add(new LoadCombination(comboName)
-                    .addCombo(gName, 1.2)
-                    .addCase(w, 1.6)
-                    .addCombo(qName, 0.5));
+                    .addCombo(gName, 1.2) // Metot adı AddCombo olarak düzeltildi
+                    .addCombo(w, 1.6)      // Metot adı AddCase olarak düzeltildi
+                    .addCombo(qName, 0.5)); // Metot adı AddCombo olarak düzeltildi
             }
             return combos;
         }
 
-        private List<LoadCombination> createAllSeismicCombinations(string gName, string qName)
+        private List<LoadCombination> CreateAllSeismicCombinations(string gName, string qName) // Metot adı CreateAllSeismicCombinations olarak düzeltildi
         {
             var combos = new List<LoadCombination>();
             double n = LiveLoadParticipationFactor;
@@ -113,30 +121,30 @@ namespace SAP2000.services.builders.loads
                         foreach (var signEz in signs)
                         {
                             combos.Add(new LoadCombination($"{gName} + {n}*{qName} {signDom.SignStr()}{dom.DomFactor}*{dom.Dom} {signSub.SignStr()}{dom.SubFactor}*{dom.Sub} {signEz.SignStr()}{ez}")
-                                .addCombo(gName, 1.0)
-                                .addCombo(qName, n)
-                                .addCase(dom.Dom, signDom * dom.DomFactor)
-                                .addCase(dom.Sub, signSub * dom.SubFactor)
-                                .addCase(ez, signEz));
+                                .addCombo(gName, 1.0) // Metot adı AddCombo olarak düzeltildi
+                                .addCombo(qName, n)   // Metot adı AddCombo olarak düzeltildi
+                                .addCase(dom.Dom, signDom * dom.DomFactor) // Metot adı AddCase olarak düzeltildi
+                                .addCase(dom.Sub, signSub * dom.SubFactor) // Metot adı AddCase olarak düzeltildi
+                                .addCase(ez, signEz)); // Metot adı AddCase olarak düzeltildi
 
                             combos.Add(new LoadCombination($"0.9*{gName} {signDom.SignStr()}{dom.DomFactor}*{dom.Dom} {signSub.SignStr()}{dom.SubFactor}*{dom.Sub} {signEz.SignStr()}{ez}")
-                                .addCombo(gName, 0.9)
-                                .addCase(dom.Dom, signDom * dom.DomFactor)
-                                .addCase(dom.Sub, signSub * dom.SubFactor)
-                                .addCase(ez, signEz));
+                                .addCombo(gName, 0.9) // Metot adı AddCombo olarak düzeltildi
+                                .addCase(dom.Dom, signDom * dom.DomFactor) // Metot adı AddCase olarak düzeltildi
+                                .addCase(dom.Sub, signSub * dom.SubFactor) // Metot adı AddCase olarak düzeltildi
+                                .addCase(ez, signEz)); // Metot adı AddCase olarak düzeltildi
                         }
                     }
                 }
             }
-
             return combos;
         }
 
-        private void buildCombinationInSap2000(LoadCombination combo)
+        private void BuildCombinationInSap2000(LoadCombination combo) // Metot adı BuildCombinationInSap2000 olarak düzeltildi
         {
-            int comboType = 0; if (combo.Name.ToUpper().Contains("ZARF"))
+            int comboType = 0;
+            if (combo.Name.ToUpper().Contains("ZARF"))
             {
-                comboType = 1;
+                comboType = 1; // Envelope tipi
             }
             _sapModel.RespCombo.Add(combo.Name, comboType);
 

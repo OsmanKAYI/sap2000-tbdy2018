@@ -672,18 +672,101 @@ namespace SAP2000
             try
             {
                 ISectionProperties section = null;
-                if (type == "Kolon") section = new ColumnSectionProperties { SectionName = txtColName.Text, MaterialName = cmbColConcrete.SelectedItem.ToString(), RebarMaterialName = cmbColRebar.SelectedItem.ToString(), Width = double.Parse(txtColWidth.Text), Depth = double.Parse(txtColHeight.Text), ConcreteCover = double.Parse(txtColCover.Text) };
-                else if (type == "Kiriş") section = new BeamSectionProperties { SectionName = txtBeamName.Text, MaterialName = cmbBeamConcrete.SelectedItem.ToString(), RebarMaterialName = cmbBeamRebar.SelectedItem.ToString(), Width = double.Parse(txtBeamWidth.Text), Depth = double.Parse(txtBeamHeight.Text), CoverTop = double.Parse(txtBeamCoverTop.Text), CoverBottom = double.Parse(txtBeamCoverBottom.Text) };
-                else if (type == "Döşeme") section = new SlabSectionProperties { SectionName = txtSlabName.Text, SlabMaterialName = cmbSlabMaterial.SelectedItem.ToString(), Thickness = double.Parse(txtSlabThickness.Text) };
+                string sectionName = "";
 
-                if (section != null && !string.IsNullOrWhiteSpace(section.SectionName) && !_sectionsToExport.Any(s => s.SectionName.Equals(section.SectionName, StringComparison.OrdinalIgnoreCase)))
+                if (type == "Kolon")
                 {
-                    _sectionsToExport.Add(section);
-                    UpdateUIDataSources();
+                    // Genişlik ve yüksekliği mm'den cm'ye çevirerek kesit adını oluştur
+                    if (!double.TryParse(txtColWidth.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double colWidth) ||
+                        !double.TryParse(txtColHeight.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double colHeight))
+                    {
+                        throw new Exception("Kolon genişliği veya yüksekliği geçerli bir sayı olmalıdır.");
+                    }
+                    int widthCm = (int)Math.Round(colWidth / 10.0);
+                    int heightCm = (int)Math.Round(colHeight / 10.0);
+                    sectionName = $"S{widthCm}/{heightCm}";
+
+                    section = new ColumnSectionProperties
+                    {
+                        SectionName = sectionName, // Otomatik oluşturulan adı kullan
+                        MaterialName = cmbColConcrete.SelectedItem?.ToString(),
+                        RebarMaterialName = cmbColRebar.SelectedItem?.ToString(),
+                        Width = colWidth,
+                        Depth = colHeight,
+                        ConcreteCover = double.Parse(txtColCover.Text, CultureInfo.InvariantCulture)
+                    };
                 }
-                else throw new Exception("Kesit adı boş olamaz veya bu isimde kesit zaten var.");
+                else if (type == "Kiriş")
+                {
+                    // Genişlik ve yüksekliği mm'den cm'ye çevirerek kesit adını oluştur
+                    if (!double.TryParse(txtBeamWidth.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double beamWidth) ||
+                        !double.TryParse(txtBeamHeight.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double beamHeight))
+                    {
+                        throw new Exception("Kiriş genişliği veya yüksekliği geçerli bir sayı olmalıdır.");
+                    }
+                    int widthCm = (int)Math.Round(beamWidth / 10.0);
+                    int heightCm = (int)Math.Round(beamHeight / 10.0);
+                    sectionName = $"K{widthCm}/{heightCm}";
+
+                    section = new BeamSectionProperties
+                    {
+                        SectionName = sectionName, // Otomatik oluşturulan adı kullan
+                        MaterialName = cmbBeamConcrete.SelectedItem?.ToString(),
+                        RebarMaterialName = cmbBeamRebar.SelectedItem?.ToString(),
+                        Width = beamWidth,
+                        Depth = beamHeight,
+                        CoverTop = double.Parse(txtBeamCoverTop.Text, CultureInfo.InvariantCulture),
+                        CoverBottom = double.Parse(txtBeamCoverBottom.Text, CultureInfo.InvariantCulture)
+                    };
+                }
+                else if (type == "Döşeme")
+                {
+                    sectionName = txtSlabName.Text; // Döşeme için mevcut adı kullan
+                    section = new SlabSectionProperties
+                    {
+                        SectionName = sectionName,
+                        SlabMaterialName = cmbSlabMaterial.SelectedItem?.ToString(),
+                        Thickness = double.Parse(txtSlabThickness.Text, CultureInfo.InvariantCulture)
+                    };
+                }
+
+                // Ortak kontroller
+                if (section == null || string.IsNullOrWhiteSpace(section.SectionName))
+                {
+                    throw new Exception("Kesit adı boş olamaz veya kesit bilgileri eksik/hatalı.");
+                }
+
+                if (_sectionsToExport.Any(s => s.SectionName.Equals(section.SectionName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    throw new Exception($"Bu isimde ({section.SectionName}) bir kesit zaten var.");
+                }
+
+                // Malzeme seçimi kontrolü
+                if (section is ColumnSectionProperties colProps && (string.IsNullOrWhiteSpace(colProps.MaterialName) || string.IsNullOrWhiteSpace(colProps.RebarMaterialName)))
+                {
+                    throw new Exception("Kolon için beton ve donatı malzemesi seçilmelidir.");
+                }
+                else if (section is BeamSectionProperties beamProps && (string.IsNullOrWhiteSpace(beamProps.MaterialName) || string.IsNullOrWhiteSpace(beamProps.RebarMaterialName)))
+                {
+                    throw new Exception("Kiriş için beton ve donatı malzemesi seçilmelidir.");
+                }
+                else if (section is SlabSectionProperties slabProps && string.IsNullOrWhiteSpace(slabProps.SlabMaterialName))
+                {
+                    throw new Exception("Döşeme için malzeme seçilmelidir.");
+                }
+
+                _sectionsToExport.Add(section);
+                UpdateUIDataSources();
+                // txtColName, txtBeamName, txtSlabName'i temizlemeye gerek yok, çünkü otomatik oluşturuluyorlar veya kullanıcı girmeli.
+                // İsterseniz otomatik oluşturulan isimleri txtName.Text'e yansıtabilirsiniz.
+                if (type == "Kolon") txtColName.Text = sectionName;
+                else if (type == "Kiriş") txtBeamName.Text = sectionName;
+                // Döşeme için txtSlabName.Text zaten kullanılıyor.
             }
-            catch (Exception ex) { MessageBox.Show($"{type} bilgileri hatalı veya eksik.\n" + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{type} bilgileri hatalı veya eksik.\n" + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BtnDeleteSection_Click(object sender, EventArgs e)

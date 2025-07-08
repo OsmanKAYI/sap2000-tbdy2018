@@ -45,7 +45,6 @@ namespace SAP2000.services
                         Sap2000MaterialBuilderFactory.getBuilder(material.MaterialType).build(sapModel, material);
                     }
                 }
-
                 if (sections != null && sections.Any())
                 {
                     foreach (var section in sections)
