@@ -155,10 +155,21 @@ Proje, modülerlik, sürdürülebilirlik ve genişletilebilirliği sağlamak iç
     * **`excel`**: Excel okuma ve veri aktarımı ile ilgili servisleri ve modelleri barındırır (örn. `ExcelDataReaderService`).
 
 ---
+## Uygulama Tanıtım Videosu
+
+Uygulamanın genel işleyişini ve özelliklerini gösteren tanıtım videosu aşağıdadır.
+
+   https://github.com/user-attachments/assets/fd0c4478-d8dc-4c26-95e8-9c1b2305f028
 
 ## Ekran Görüntüleri
 
 <div align="center">
+
+
+
+
+
+
 
 <img src="https://github.com/user-attachments/assets/7c20fea6-9b34-4e15-96cd-88acaaf01ad6" alt="Ana Ekran" width="760" height="480" />
 <img src="https://github.com/user-attachments/assets/b56837a8-ac6f-47e5-b997-cf4e6fcdea8d" alt="Kesit Tanımlama/Kesit Yerleşimi" width="760" height="480" />
