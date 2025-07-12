@@ -1,3 +1,12 @@
+---
+## Uygulama Tanıtım Videosu
+
+Uygulamanın genel işleyişini ve özelliklerini gösteren tanıtım videosu aşağıdadır. 
+
+   https://github.com/user-attachments/assets/fd0c4478-d8dc-4c26-95e8-9c1b2305f028
+   
+---
+
 # SAP2000 TBDY-2018 Model Üretici
 
 Modern bir Windows Forms uygulaması olan bu araç, TS500 ve TBDY-2018 Türk bina yönetmeliklerine uygun, parametrik SAP2000 yapı modellerinin hızlı ve doğru bir şekilde oluşturulması için tasarlanmıştır. Mühendislerin malzeme, kesit, kat bilgileri, eleman yerleşimleri ve kritik deprem parametrelerini kolayca tanımlamalarını sağlayarak, yapısal modelin resmi SAP2000 API'si aracılığıyla doğrudan ve eksiksiz bir şekilde aktarımını mümkün kılar. **Güçlü Excel entegrasyonu sayesinde, büyük projelerde veri girişini otomatize ederek zamandan tasarruf etmenizi ve hata riskini minimize etmenizi sağlar.**
@@ -155,11 +164,6 @@ Proje, modülerlik, sürdürülebilirlik ve genişletilebilirliği sağlamak iç
     * **`excel`**: Excel okuma ve veri aktarımı ile ilgili servisleri ve modelleri barındırır (örn. `ExcelDataReaderService`).
 
 ---
-## Uygulama Tanıtım Videosu
-
-Uygulamanın genel işleyişini ve özelliklerini gösteren tanıtım videosu aşağıdadır.
-
-   https://github.com/user-attachments/assets/fd0c4478-d8dc-4c26-95e8-9c1b2305f028
 
 ## Ekran Görüntüleri
 
