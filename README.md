@@ -165,23 +165,18 @@ Uygulamanın genel işleyişini ve özelliklerini gösteren tanıtım videosu a�
 
 <div align="center">
 
+<img src="https://github.com/user-attachments/assets/1f544b66-e093-4f27-a92a-3138da258f67" alt="Ana Ekran" width="760" height="480"  />
+<img src="https://github.com/user-attachments/assets/befa8ade-d39b-4648-8e03-c96e3f4365b3" alt="Excel'den Kesit Yerleşimi" width="760" height="480" />
 
+<img src="https://github.com/user-attachments/assets/ef986028-de83-4776-8fe5-1d909823ecbe" alt="AFAD Verilerinin Girilmesi" width="760" height="480" />
 
-
-
-
-
-<img src="https://github.com/user-attachments/assets/7c20fea6-9b34-4e15-96cd-88acaaf01ad6" alt="Ana Ekran" width="760" height="480" />
-<img src="https://github.com/user-attachments/assets/b56837a8-ac6f-47e5-b997-cf4e6fcdea8d" alt="Kesit Tanımlama/Kesit Yerleşimi" width="760" height="480" />
-<img src="https://github.com/user-attachments/assets/9f4cd368-51a7-4d52-b409-24689d50f3f3" alt="Malzeme Tanımlama" width="760" height="480" />
-
-<img src="https://github.com/user-attachments/assets/3be0dbbe-74af-4f28-a5e2-bfa06c244f5f" alt="SAP2000 Açılışı" width="760" height="480" />
+<img src="https://github.com/user-attachments/assets/fcdb1da5-3c09-47d7-99ad-c16e9d212389" alt="SAP2000 Açılışı" width="760" height="480" />
 <br>
-<img src="https://github.com/user-attachments/assets/460d2b0b-e19e-45c1-a68d-95575520ca71" alt="Başarılı Aktarım" width="200" height="120" />
+<img src="https://github.com/user-attachments/assets/55f27fd1-eb62-4c1d-b0d6-60d71efde256" alt="Başarılı Aktarım" width="760" height="480" />
 <br>
-<img src="https://github.com/user-attachments/assets/ae196838-f2be-4ecb-a631-4687feba73c9" alt="Deprem Verisi Girişi" width="350" height="300" />
+<img src="https://github.com/user-attachments/assets/3bca7402-3f8e-464c-81a2-6261f0a44184" alt="Tasarım Spektrumların Aktarılması" width="760" height="300" />
 <br>
-<img src="https://github.com/user-attachments/assets/d2df72e0-5bb8-4aaf-9de8-4d66e1a6000d" alt="SAP2000 Modeli" width="760" height="480" />
+<img src="https://github.com/user-attachments/assets/b5ecf3b1-e6c4-4acf-9edd-672fa09b6d3a" alt="SAP2000 Modeli" width="760" height="480" />
 
 </div>
 
